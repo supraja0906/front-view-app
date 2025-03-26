@@ -15,7 +15,21 @@ export const CampaignComponent: React.FC = () => {
   const [errorMessage,setErrorMessage] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.CAMPAIGNS, {credentials: "include"});
+        const data = await response.json();
+        setCampaigns(data);
+      } catch (error) {
+        console.error('Error fetching campaigns:', error);
+      }
+    }
+    
     fetchCampaigns();
+
+    const intervalId = setInterval(fetchCampaigns, 60*1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const handleDeleteClick = (campaign: Campaign) => {
@@ -53,16 +67,7 @@ export const CampaignComponent: React.FC = () => {
       console.error('Error downloading campaign reports:', error);
     }
   };
-  
-  const fetchCampaigns = async () => {
-    try {
-      const response = await fetch(API_ENDPOINTS.CAMPAIGNS, {credentials: "include"});
-      const data = await response.json();
-      setCampaigns(data);
-    } catch (error) {
-      console.error('Error fetching campaigns:', error);
-    }
-  };
+
 
 
   const handleStartClick = async (campaign: Campaign) => {
